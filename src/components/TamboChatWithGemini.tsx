@@ -10,6 +10,7 @@ import { Loader2, Send, Bot, User, Brain, Zap } from 'lucide-react';
 import { geminiClient } from '@/services/geminiClient';
 import { abacusClient } from '@/services/abacusClient';
 import { tamboClient } from '@/services/tamboClient';
+import { enhancedIntelligence, EnhancedRoutingDecision } from '@/services/enhancedIntelligence';
 
 interface Message {
   id: string;
@@ -43,7 +44,7 @@ const TamboChatWithGemini = () => {
     // Welcome message
     const welcomeMessage: Message = {
       id: 'welcome',
-      content: `🧠 **TAMBO BUDDY with Gemini Intelligence** is online!\n\nI now combine three powerful AI layers:\n• **Gemini AI** - Advanced reasoning and decision-making\n• **ABACUS MCP** - Specialized routing intelligence\n• **TAMBO API** - Component and integration safety\n\nTry asking me about:\n• Routing decisions\n• Component updates\n• MCP integrations\n• Diagnostics and analysis\n• General TAMBO operations`,
+      content: `🧠 **TAMBO BUDDY with Enhanced Contextual Intelligence** is online!\n\nI now feature **Advanced Multi-Layer AI** with:\n• **Enhanced Contextual Analysis** - User profiles, conversation history, intent tracking\n• **Business Rules Engine** - Tier-based routing, permissions, escalation logic\n• **Multi-Factor Decision Making** - User history, conversation flow, complexity assessment\n• **Learning System** - Improves routing decisions over time\n• **Cross-Validation** - Gemini AI + ABACUS MCP + TAMBO Safety\n\n**Smart Capabilities:**\n✨ Contextual conversation memory\n✨ User preference learning\n✨ Business rule enforcement\n✨ Multi-step workflow handling\n✨ Automatic escalation detection\n✨ Success probability estimation\n\nTry complex routing scenarios - I understand context, user history, and business needs!`,
       sender: 'tambo',
       timestamp: new Date(),
       metadata: {
@@ -107,47 +108,66 @@ const TamboChatWithGemini = () => {
   };
 
   const processRoutingRequest = async (message: string): Promise<IntelligenceResponse> => {
-    // Use Gemini for intelligent analysis combined with ABACUS routing
-    const geminiDecision = await geminiClient.analyzeAndRoute({
-      userTier,
-      environment,
-      requestType: 'routing',
-      payload: message
-    });
+    // Use enhanced contextual intelligence system
+    const userId = 'demo-user-' + Date.now();
+    const sessionId = 'session-' + Date.now();
+    
+    const enhancedDecision = await enhancedIntelligence.intelligentRoute(
+      message,
+      userId,
+      sessionId,
+      { userTier, environment }
+    );
+    
+    // Cross-validate with existing systems for comparison
+    const [geminiDecision, abacusResponse] = await Promise.all([
+      geminiClient.analyzeAndRoute({
+        userTier,
+        environment,
+        requestType: 'routing',
+        payload: message
+      }),
+      abacusClient.routeRequest(userTier, message, environment)
+    ]);
 
-    // Cross-validate with ABACUS for specialized MCP knowledge
-    const abacusResponse = await abacusClient.routeRequest(userTier, message, environment);
+    // Enhanced hybrid response with contextual intelligence
+    const hybridResponse = `## 🧠 Enhanced Contextual Routing Decision
 
-    // Combine insights
-    const hybridResponse = `## 🧠 Intelligent Routing Decision
+### 🎯 **Primary Recommendation**
+- **Agent:** ${enhancedDecision.primary_agent}
+- **Route:** ${enhancedDecision.primary_route}
+- **Confidence:** ${(enhancedDecision.confidence * 100).toFixed(1)}%
+- **Approach:** ${enhancedDecision.recommended_approach}
+- **Expected Resolution:** ${enhancedDecision.expected_resolution_time}
+- **Success Probability:** ${(enhancedDecision.success_probability * 100).toFixed(0)}%
 
-**Gemini AI Analysis:**
-- **Agent:** ${geminiDecision.agent}
-- **Route:** ${geminiDecision.route}
-- **Intent:** ${geminiDecision.intent}
-- **Confidence:** ${(geminiDecision.confidence * 100).toFixed(1)}%
+### 🔍 **Contextual Analysis**
+- **User History Score:** ${(enhancedDecision.context_factors.user_history * 100).toFixed(0)}%
+- **Conversation Flow:** ${(enhancedDecision.context_factors.conversation_flow * 100).toFixed(0)}%
+- **Business Rules:** ${(enhancedDecision.context_factors.business_rules * 100).toFixed(0)}%
+- **Technical Complexity:** ${(enhancedDecision.context_factors.technical_complexity * 100).toFixed(0)}%
 
-**Reasoning:** ${geminiDecision.reasoning}
+### 💭 **Intelligent Reasoning**
+${enhancedDecision.reasoning.map(reason => `• ${reason}`).join('\n')}
 
-**ABACUS MCP Validation:**
-- **Agent:** ${abacusResponse.agent}
-- **Route:** ${abacusResponse.route}
-- **Keywords Matched:** ${abacusResponse.metadata.keywords_matched.join(', ') || 'general content'}
+### 🚨 **Fallback Options**
+${enhancedDecision.fallback_agents.map(agent => `• ${agent} (backup routing)`).join('\n')}
 
-**Recommendations:**
-${geminiDecision.recommendations.map(rec => `• ${rec}`).join('\n')}
+### 🔄 **Cross-Validation**
+**Gemini AI:** ${geminiDecision.agent} (${(geminiDecision.confidence * 100).toFixed(0)}% confidence)
+**ABACUS MCP:** ${abacusResponse.agent} (${abacusResponse.route})
+**Keywords Matched:** ${abacusResponse.metadata.keywords_matched.join(', ') || 'general content'}
 
-**Risk Assessment:** ${geminiDecision.riskAssessment.level}
-${geminiDecision.riskAssessment.concerns.length > 0 ? 
-  `\n**Concerns:**\n${geminiDecision.riskAssessment.concerns.map(c => `⚠️ ${c}`).join('\n')}` : ''}
-
-**Next Steps:**
-${geminiDecision.nextSteps.map(step => `1. ${step}`).join('\n')}`;
+### 📋 **Next Steps**
+1. Route to ${enhancedDecision.primary_agent}
+2. Monitor conversation context for escalation needs
+3. Apply business rules and user preferences
+4. Learn from interaction for future improvements`;
 
     return {
       message: hybridResponse,
-      decision: geminiDecision,
-      recommendations: geminiDecision.recommendations,
+      decision: enhancedDecision,
+      recommendations: enhancedDecision.reasoning,
       source: 'hybrid'
     };
   };
