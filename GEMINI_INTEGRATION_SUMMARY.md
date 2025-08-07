@@ -67,15 +67,15 @@ UI/UX Updates → TamboDesignAgent → /design
 
 ### Required Environment Variables
 ```bash
-# Google Gemini AI API Key
-VITE_GOOGLE_GEMINI_API_KEY=AIzaSyAl_8S6g6kkpO4f550HN4jg0mWaiXwa5FA
+# Google Gemini AI API Key (⚠️ GENERATE NEW KEY - OLD ONE COMPROMISED)
+VITE_GOOGLE_GEMINI_API_KEY=your_new_regenerated_google_api_key_here
 
 # TAMBO API Configuration  
-VITE_TAMBO_API_KEY=tambo_2crvFKf2vvsK8WYmBToavxmgJF+jeuR0o5yNaNUBxhP1L56c6YeCZao0/voar1gR47s4yevBC0QQ/XfIfBE9aAueUIBiHEosmPHJv4jVjqY=
+VITE_TAMBO_API_KEY=your_tambo_api_key_here
 VITE_TAMBO_API_BASE_URL=https://api.tambo.co/v1
 
 # ABACUS Configuration
-VITE_ABACUS_APP_ID=1573da0c2c
+VITE_ABACUS_APP_ID=your_abacus_app_id_here
 VITE_ABACUS_BASE_URL=https://apps.abacus.ai/chatllm
 ```
 
