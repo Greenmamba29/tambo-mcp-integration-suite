@@ -1,0 +1,162 @@
+generator client {
+    provider = "prisma-client-js"
+    binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
+    output = "/home/ubuntu/tambo_mcp_integration_suite/app/node_modules/.prisma/client"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+  mcpConfigurations McpConfiguration[]
+  testSuites TestSuite[]
+  routingTests RoutingTest[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verificationtokens")
+}
+
+// MCP Integration Models
+model McpConfiguration {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+  appId       String   @default("1573da0c2c") // TAMBO BUDDY App ID
+  baseUrl     String   @default("https://apps.abacus.ai/chatllm/")
+  config      Json     // Flexible configuration storage
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  testSuites   TestSuite[]
+  routingTests RoutingTest[]
+  analytics    Analytics[]
+
+  @@map("mcp_configurations")
+}
+
+model TestSuite {
+  id               String   @id @default(cuid())
+  userId           String
+  mcpConfigId      String
+  name             String
+  description      String?
+  testCases        Json     // Array of test case objects
+  expectedResults  Json     // Expected routing results
+  status           String   @default("pending") // pending, running, completed, failed
+  lastRunAt        DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mcpConfig    McpConfiguration @relation(fields: [mcpConfigId], references: [id], onDelete: Cascade)
+  routingTests RoutingTest[]
+
+  @@map("test_suites")
+}
+
+model RoutingTest {
+  id            String   @id @default(cuid())
+  userId        String
+  mcpConfigId   String
+  testSuiteId   String?
+  inputMessage  String
+  expectedRoute String?
+  actualRoute   String?
+  confidence    Float?
+  responseTime  Int?     // milliseconds
+  status        String   @default("pending") // pending, running, passed, failed
+  errorMessage  String?
+  metadata      Json?    // Additional test metadata
+  executedAt    DateTime?
+  createdAt     DateTime @default(now())
+
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mcpConfig   McpConfiguration  @relation(fields: [mcpConfigId], references: [id], onDelete: Cascade)
+  testSuite   TestSuite?        @relation(fields: [testSuiteId], references: [id], onDelete: Cascade)
+
+  @@map("routing_tests")
+}
+
+model Analytics {
+  id            String   @id @default(cuid())
+  mcpConfigId   String
+  date          DateTime @default(now())
+  totalRequests Int      @default(0)
+  successRate   Float    @default(0)
+  avgResponse   Float    @default(0) // Average response time
+  routingData   Json     // Routing statistics
+  errorCount    Int      @default(0)
+  metadata      Json?    // Additional analytics data
+
+  mcpConfig McpConfiguration @relation(fields: [mcpConfigId], references: [id], onDelete: Cascade)
+
+  @@unique([mcpConfigId, date])
+  @@map("analytics")
+}
+
+// Integration Examples and Templates
+model IntegrationExample {
+  id          String   @id @default(cuid())
+  name        String
+  category    String   // e.g., "routing", "testing", "monitoring"
+  description String
+  codeExample String   @db.Text
+  metadata    Json?
+  isPublic    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("integration_examples")
+}
