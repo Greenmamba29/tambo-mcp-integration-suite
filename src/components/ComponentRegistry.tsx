@@ -4,6 +4,9 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+import { Separator } from '@/components/ui/separator';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { 
   Search, 
   Package, 
@@ -13,7 +16,14 @@ import {
   Filter,
   BookOpen,
   Wrench,
-  Sparkles
+  Sparkles,
+  Edit3,
+  Save,
+  Play,
+  FileCode,
+  Download,
+  Copy,
+  Check
 } from 'lucide-react';
 import { 
   sampleComponents, 

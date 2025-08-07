@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { DesignAssistant } from '@/components/DesignAssistant';
 import TamboChatWithGemini from '@/components/TamboChatWithGemini';
 import EnhancedTamboConsolePro from '@/components/EnhancedTamboConsolePro';
+import WorkflowManager from '@/components/WorkflowManager';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Brain, MessageSquare, Settings, Sparkles, Zap, Bot } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Brain, MessageSquare, Settings, Sparkles, Zap, Bot, BookOpen, Code, Eye, FileCode, ArrowRight, CheckCircle } from 'lucide-react';
 import heroImage from '@/assets/hero-tambo.jpg';
 
 const Index = () => {
@@ -129,7 +132,7 @@ const Index = () => {
               <Sparkles className="w-4 h-4" />
               <span>Component Designer</span>
               <Badge variant="outline" className="ml-2 bg-green-50 text-green-700 text-xs">
-                Classic
+                Enhanced Workflow
               </Badge>
             </TabsTrigger>
           </TabsList>
@@ -177,24 +180,24 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="designer" className="mt-0">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-3">
-                  <Sparkles className="w-6 h-6 text-green-600" />
-                  <span>Classic Design Assistant</span>
-                  <Badge variant="outline" className="bg-green-50 text-green-700">
-                    Component Creation
+            <div className="space-y-6">
+              <div className="text-center mb-6">
+                <div className="flex items-center justify-center space-x-3 mb-4">
+                  <Sparkles className="w-8 h-8 text-green-600" />
+                  <h2 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+                    Enhanced Component Workflow
+                  </h2>
+                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                    Intelligent Design
                   </Badge>
-                </CardTitle>
-                <p className="text-muted-foreground">
-                  Create and modify React components with AI assistance. The original TAMBO design buddy 
-                  for component-focused development work.
+                </div>
+                <p className="text-gray-600 max-w-3xl mx-auto">
+                  Complete component design workflow with guided steps, live preview, seamless integration, 
+                  and intelligent state management for professional development.
                 </p>
-              </CardHeader>
-              <CardContent>
-                <DesignAssistant />
-              </CardContent>
-            </Card>
+              </div>
+              <WorkflowManager />
+            </div>
           </TabsContent>
         </Tabs>
       </div>
