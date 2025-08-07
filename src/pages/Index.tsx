@@ -13,6 +13,25 @@ import heroImage from '@/assets/hero-tambo.jpg';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('chat');
+  
+  // Function to handle hero button clicks with smooth scrolling
+  const handleHeroButtonClick = (tabValue: string) => {
+    setActiveTab(tabValue);
+    // Add a small delay to ensure state is updated before scrolling
+    setTimeout(() => {
+      const tabsSection = document.getElementById('main-tabs');
+      if (tabsSection) {
+        // Scroll to tabs section with a small offset for better UX
+        const yOffset = -20; // 20px above the element
+        const y = tabsSection.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        
+        window.scrollTo({
+          top: y,
+          behavior: 'smooth'
+        });
+      }
+    }, 100);
+  };
 
   const features = [
     {
@@ -68,18 +87,20 @@ const Index = () => {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
               <button 
-                onClick={() => setActiveTab('chat')}
-                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-200 flex items-center space-x-2"
+                onClick={() => handleHeroButtonClick('chat')}
+                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-200 flex items-center space-x-2 group"
               >
-                <MessageSquare className="w-5 h-5" />
+                <MessageSquare className="w-5 h-5 group-hover:animate-pulse" />
                 <span>Try AI Chat</span>
+                <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
               </button>
               <button 
-                onClick={() => setActiveTab('console')}
-                className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2"
+                onClick={() => handleHeroButtonClick('console')}
+                className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 group"
               >
-                <Settings className="w-5 h-5" />
+                <Settings className="w-5 h-5 group-hover:rotate-90 transition-transform" />
                 <span>Enterprise Console</span>
+                <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
           </div>
@@ -109,7 +130,7 @@ const Index = () => {
       </div>
 
       {/* Main Interface */}
-      <div className="container mx-auto px-4 pb-16">
+      <div id="main-tabs" className="container mx-auto px-4 pb-16">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-8">
             <TabsTrigger value="chat" className="flex items-center space-x-2">
