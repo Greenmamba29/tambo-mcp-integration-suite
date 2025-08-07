@@ -1,0 +1,34 @@
+🎯 ABACUS DEPLOYMENT - QUICK REFERENCE
+============================================
+
+📂 REPOSITORY
+git@github.com:Greenmamba29/tambo-mcp-integration-suite.git
+Branch: main
+
+🛠️ BUILD SETTINGS
+Install: npm install
+Build: npm run build
+Output: dist
+Framework: Vite
+
+🌐 DOMAIN
+filesinasnap.com
+
+🔑 ENVIRONMENT VARIABLES (Copy & Paste)
+NODE_ENV=production
+VITE_GOOGLE_GEMINI_API_KEY=AIzaSyAl_8S6g6kkpO4f550HN4jg0mWaiXwa5FA
+VITE_TAMBO_API_KEY=tambo_2crvFKf2vvsK8WYmBToavxmgJF+jeuR0o5yNaNUBxhP1L56c6YeCZao0/voar1gR47s4yevBC0QQ/XfIfBE9aAueUIBiHEosmPHJv4JVjqY=
+VITE_TAMBO_API_BASE_URL=https://api.tambo.co/v1
+VITE_ABACUS_APP_ID=1573da0c2c
+VITE_ABACUS_BASE_URL=https://apps.abacus.ai/chatllm
+VITE_APP_NAME=TAMBO MCP Integration Suite
+VITE_APP_VERSION=2.0.0
+
+⚙️ ADVANCED SETTINGS
+✅ SPA Routing: Enable
+✅ Auto-deploy: Enable  
+✅ HTTPS: Force HTTPS
+✅ CDN: Enable (if available)
+
+🎯 TEST AFTER DEPLOY
+https://filesinasnap.com
