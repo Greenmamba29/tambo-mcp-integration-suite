@@ -1,18 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DesignAssistant } from '@/components/DesignAssistant';
 import TamboChatWithGemini from '@/components/TamboChatWithGemini';
 import EnhancedTamboConsolePro from '@/components/EnhancedTamboConsolePro';
 import WorkflowManager from '@/components/WorkflowManager';
+import FileManagementSystem from '@/components/FileManagementSystem';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Brain, MessageSquare, Settings, Sparkles, Zap, Bot, BookOpen, Code, Eye, FileCode, ArrowRight, CheckCircle } from 'lucide-react';
+import { Brain, MessageSquare, Settings, Sparkles, Zap, Bot, BookOpen, Code, Eye, FileCode, ArrowRight, CheckCircle, Files, Shield, Gauge } from 'lucide-react';
 import heroImage from '@/assets/hero-tambo.jpg';
+import { performanceMonitor } from '@/lib/security';
+import { supabase } from '@/lib/supabase';
 
 const Index = () => {
-  const [activeTab, setActiveTab] = useState('chat');
+  const [activeTab, setActiveTab] = useState('files');
   
   // Function to handle hero button clicks with smooth scrolling
   const handleHeroButtonClick = (tabValue: string) => {
@@ -132,7 +135,15 @@ const Index = () => {
       {/* Main Interface */}
       <div id="main-tabs" className="container mx-auto px-4 pb-16">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8">
+          <TabsList className="grid w-full grid-cols-4 mb-8">
+            <TabsTrigger value="files" className="flex items-center space-x-2">
+              <Files className="w-4 h-4" />
+              <span>Files Manager</span>
+              <Badge variant="outline" className="ml-2 bg-emerald-50 text-emerald-700 text-xs">
+                Enhanced
+              </Badge>
+            </TabsTrigger>
+            
             <TabsTrigger value="chat" className="flex items-center space-x-2">
               <MessageSquare className="w-4 h-4" />
               <span>AI Chat Assistant</span>
@@ -157,6 +168,10 @@ const Index = () => {
               </Badge>
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="files" className="mt-0">
+            <FileManagementSystem />
+          </TabsContent>
 
           <TabsContent value="chat" className="mt-0">
             <Card>

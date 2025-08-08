@@ -1,12 +1,22 @@
-# 🔒 SSL Certificate Fix Guide for FilesInASnap.com
+# 🔧 FilesInASnap.com SSL Certificate & Redirect Fix Guide
 
-## Problem Identified
-Safari is showing "This Connection Is Not Private" because the SSL certificate for filesinasnap.com doesn't properly cover both the root domain and www subdomain.
+## 🚨 **IMMEDIATE PROBLEM IDENTIFIED**
 
-## Root Cause
-- The domain is redirecting from `filesinasnap.com` to `www.filesinasnap.com`
-- The SSL certificate doesn't match both domains
-- This creates a certificate name mismatch error
+Your domain `filesinasnap.com` is currently redirecting to `www.filesinasnap.com` which is causing:
+- SSL certificate mismatches
+- Redirect loops (307 redirects)
+- "This Connection Is Not Private" errors
+- Site accessibility issues
+
+## Root Cause Analysis
+**DIAGNOSTIC RESULTS FROM LIVE TESTING:**
+```bash
+# Current broken state:
+filesinasnap.com → HTTP 307 → www.filesinasnap.com
+www.filesinasnap.com → HTTP 200 (working)
+```
+
+The SSL certificate is VALID (`*.filesinasnap.com` from Let's Encrypt) but the redirect configuration is backwards!
 
 ## ✅ Solution Applied
 

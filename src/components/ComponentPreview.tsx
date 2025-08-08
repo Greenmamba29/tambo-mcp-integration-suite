@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { LiveProvider, LivePreview, LiveError } from 'react-live';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   Eye, 
   EyeOff, 
@@ -12,7 +14,9 @@ import {
   Sparkles,
   Code,
   Palette,
-  Settings
+  Settings,
+  AlertTriangle,
+  Play
 } from 'lucide-react';
 
 interface ComponentPreviewProps {
@@ -27,6 +31,74 @@ export const ComponentPreview: React.FC<ComponentPreviewProps> = ({
   const [showCode, setShowCode] = useState(false);
   const [modifyInstructions, setModifyInstructions] = useState('');
   const [previewMode, setPreviewMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
+
+  // Scope for react-live - provides all necessary components and utilities
+  const liveScope = useMemo(() => ({
+    React,
+    useState,
+    useMemo,
+    Button,
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+    Input,
+    Badge,
+    Alert,
+    AlertDescription,
+    Eye,
+    EyeOff,
+    RotateCcw,
+    Download,
+    Share2,
+    Sparkles,
+    Code,
+    Palette,
+    Settings,
+    AlertTriangle,
+    Play
+  }), []);
+
+  // Clean and prepare the component code for rendering
+  const cleanedComponentCode = useMemo(() => {
+    if (!componentCode) return '';
+    
+    // Remove imports as they'll be provided by scope
+    let cleaned = componentCode.replace(/^import.*$/gm, '');
+    
+    // Remove empty lines from start
+    cleaned = cleaned.replace(/^\s*\n/gm, '');
+    
+    // If it's a default export, extract just the component
+    if (cleaned.includes('export default')) {
+      const match = cleaned.match(/export default\s+(\w+)/);
+      if (match) {
+        const componentName = match[1];
+        // Remove the export default line and render the component
+        cleaned = cleaned.replace(/export default.*$/gm, '');
+        cleaned += `\n\n<${componentName} />`;
+      }
+    }
+    
+    // If it's a named export, try to extract and render it
+    if (cleaned.includes('export const') || cleaned.includes('export function')) {
+      const namedMatch = cleaned.match(/export (?:const|function)\s+(\w+)/);
+      if (namedMatch && !cleaned.includes(`<${namedMatch[1]}`)) {
+        cleaned += `\n\n<${namedMatch[1]} />`;
+      }
+    }
+    
+    // If no JSX render found and it looks like a component definition, try to render it
+    if (!cleaned.includes('<') && cleaned.includes('const ')) {
+      const constMatch = cleaned.match(/const\s+(\w+)\s*=/);
+      if (constMatch) {
+        cleaned += `\n\n<${constMatch[1]} />`;
+      }
+    }
+    
+    return cleaned;
+  }, [componentCode]);
 
   const handleModify = () => {
     if (modifyInstructions.trim() && onModify) {
@@ -43,47 +115,19 @@ export const ComponentPreview: React.FC<ComponentPreviewProps> = ({
     }
   };
 
-  // Mock component for preview (in a real implementation, this would dynamically render the generated component)
-  const MockGeneratedComponent = () => (
-    <Card className="gradient-card shadow-elegant">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-accent-bright" />
-          Generated Component
-        </CardTitle>
-        <CardDescription>
-          Created with Tambo + ABACUS.AI MCP integration
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <p className="text-muted-foreground">
-            This is a preview of your generated component. In a real implementation, 
-            this would render the actual component from the generated code.
-          </p>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 bg-accent rounded-lg">
-              <h4 className="font-semibold text-accent-foreground">AI-Powered</h4>
-              <p className="text-sm text-accent-foreground/80">Generated with ABACUS.AI</p>
-            </div>
-            <div className="p-4 bg-primary/10 rounded-lg">
-              <h4 className="font-semibold text-primary">Tambo Ready</h4>
-              <p className="text-sm text-muted-foreground">MCP Compatible</p>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="default" size="sm">
-              <Code className="h-3 w-3 mr-2" />
-              Primary Action
-            </Button>
-            <Button variant="outline" size="sm">
-              <Palette className="h-3 w-3 mr-2" />
-              Secondary
-            </Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+  // Fallback component when live rendering fails
+  const FallbackComponent = () => (
+    <div className="flex flex-col items-center justify-center py-8 space-y-4">
+      <div className="p-3 rounded-full bg-muted">
+        <AlertTriangle className="h-6 w-6 text-muted-foreground" />
+      </div>
+      <div className="text-center">
+        <h3 className="text-sm font-medium text-muted-foreground">Component Preview Unavailable</h3>
+        <p className="text-xs text-muted-foreground mt-1">
+          The generated code cannot be rendered safely. Check for syntax errors below.
+        </p>
+      </div>
+    </div>
   );
 
   if (!componentCode) {
@@ -163,7 +207,17 @@ export const ComponentPreview: React.FC<ComponentPreviewProps> = ({
       <div className="space-y-4">
         <Card className="p-6 bg-muted/20 pattern-dots">
           <div className={`mx-auto transition-all duration-300 ${getPreviewWidth()}`}>
-            <MockGeneratedComponent />
+            <LiveProvider code={cleanedComponentCode} scope={liveScope} noInline={false}>
+              <div className="space-y-4">
+                {/* Live Preview */}
+                <div className="rounded-lg border bg-background p-4 min-h-[200px]">
+                  <LivePreview />
+                </div>
+                
+                {/* Error Display */}
+                <LiveError className="bg-destructive/10 border-destructive text-destructive px-4 py-2 rounded-lg text-sm font-mono" />
+              </div>
+            </LiveProvider>
           </div>
         </Card>
 

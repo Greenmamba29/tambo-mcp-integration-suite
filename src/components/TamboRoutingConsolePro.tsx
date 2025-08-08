@@ -57,11 +57,31 @@ const TamboRoutingConsolePro = () => {
     }
 
     try {
-      const apiUrl = environment === 'production' 
-        ? 'https://api.tambo.ai/mcp/execute'
-        : 'https://filesinasnap.com/api/mcp/execute';
+      // Use the new MCP serverless endpoints
+      let apiUrl;
+      switch (mode) {
+        case 'componentUpdate':
+          apiUrl = environment === 'production' 
+            ? 'https://filesinasnap.com/api/mcp/update-component'
+            : 'http://localhost:3000/api/mcp/update-component';
+          break;
+        case 'agentDiagnostics':
+          apiUrl = environment === 'production' 
+            ? 'https://filesinasnap.com/api/mcp/run-diagnostics'
+            : 'http://localhost:3000/api/mcp/run-diagnostics';
+          break;
+        default:
+          apiUrl = environment === 'production' 
+            ? 'https://filesinasnap.com/api/mcp/execute'
+            : 'http://localhost:3000/api/mcp/execute';
+      }
       
-      const result = await axios.post(apiUrl, requestBody);
+      const result = await axios.post(apiUrl, requestBody, {
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_MCP_API_KEY || 'demo-key'}`,
+          'Content-Type': 'application/json'
+        }
+      });
       setResponse(result.data);
     } catch (error) {
       setResponse({ error: error.message });
